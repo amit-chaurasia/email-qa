@@ -1,0 +1,56 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pdb
+*.egg
+*.egg-info/
+*.log
+*.sqlite3
+
+# Environments
+.env
+.env.*
+.venv/
+venv/
+ENV/
+
+# VS Code
+.vscode/
+.history/
+
+# Docker
+*.pid
+*.sock
+docker-compose.override.yml
+*.log
+
+# Ollama model volume
+ollama_models/
+
+# Byte-compiled files
+*.pyc
+*.pyo
+*.pyd
+
+# System files
+.DS_Store
+Thumbs.db
+
+# Coverage
+htmlcov/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+
+# Testing
+test_output/
+.pytest_cache/
+
+# FastAPI docs cache (if generated)
+openapi.json
+docs/
