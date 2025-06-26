@@ -55,7 +55,7 @@ The following commands simplify Docker and API interaction:
 
 ```bash
 git clone <repo>
-cd email-extractor
+cd email-qa
 ```
 
 ### 2. Create `.env` file
