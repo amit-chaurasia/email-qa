@@ -3,7 +3,6 @@ from dotenv import load_dotenv
 import ollama
 from fastapi import FastAPI, Request, HTTPException
 from fastapi.responses import JSONResponse
-from email_reply_parser import EmailReplyParser
 
 load_dotenv()
 
@@ -13,17 +12,29 @@ ollama.base_url = OLLAMA_HOST
 
 app = FastAPI(title="Email Extractor API")
 
-PROMPT_TEMPLATE = (
-    "From the text below, return exactly the email content beginning including the first greeting "
-    "(e.g., 'Hi', 'Hello') and ending with the sender's final sign‑off line including that line that contains the name of the preson if present in signoff. "
-    "Preserve original line breaks and spacing. Do NOT add any extra words, labels, or quotation marks.\n---\n{latest}\n---"
-)
+PROMPT_TEMPLATE = """You are an assistant that extracts the main composed message from email replies.
+
+Instructions:
+- Extract ONLY the text that begins with a **salutation** like “Hi”, “Hello”, “Hey”, etc. It must **start exactly at that greeting**.
+- Continue extracting text **until the closing line that contains a sign-off**, such as “Thanks”, “Thank you”, “Regards”, or the sender's **name** (e.g., "Meghan", "John", etc.).
+- **Do NOT include any previous email replies, headers, or signatures.**
+- **Do NOT extract anything before the salutation or after the closing name/sign-off.**
+- The result must be natural and human-readable, maintaining all original **line breaks** and paragraph formatting.
+
+Input:
+---
+{body}
+---
+
+Output:
+Only the body of the message, from greeting to sign-off, nothing else."""
+
 
 def extract(txt: str, model: str) -> str:
-    latest = EmailReplyParser.read(txt).reply.strip()
-    prompt = PROMPT_TEMPLATE.format(latest=latest)
+    prompt = PROMPT_TEMPLATE.format(body=txt)
     res = ollama.chat(model=model, messages=[{"role": "user", "content": prompt}])
     return res["message"]["content"].strip()
+
 
 @app.post("/extract", response_class=JSONResponse)
 async def api(request: Request):
